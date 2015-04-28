@@ -4,10 +4,18 @@
 '''
 
 from ExtractChrom import ExtractSpec
-from Common import InRange
-from GetPeaks import SelectPeaks, HighestPeaks
 import pymzml
 from pprint import pprint
+
+def HighestPeaks(peaklist):
+    max_item= (0,0)
+    for eachitem in peaklist:
+        if eachitem[1] > max_item[1]:
+            max_item = eachitem
+    return max_item
+
+def SelectPeaks(peaks, mzRange):
+    return [ (mz,i) for mz, i in peaks if mzRange[0] <= mz <= mzRange[1] ]
 
 def AllMassPossibility(a_mass):
     return [a_mass, a_mass / 2, a_mass / 3, a_mass / 4]
