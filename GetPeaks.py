@@ -18,18 +18,22 @@ def HighestPeaks(peaklist):
 def SelectPeaks(peaks, mzRange):
     return [ (mz,i) for mz, i in peaks if mzRange[0] <= mz <= mzRange[1] ]
 
-def PlotRange(run):
+def PlotRange(run, rt_time):
     p = pymzml.plot.Factory()
     n = 0
     for spec in run:
+        if spec['ms level'] != 1:
+            continue
+        print spec["scan time"], abs(spec["scan time"] - rt_time)
+        if abs(spec["scan time"] - rt_time) > 0.003:
+            continue
         n = n + 1
-        print n
+        print "plot graph..."
         p.newPlot()
         p.add(spec.peaks, color=(200,00,00), style='circles')
         p.add(spec.centroidedPeaks, color=(00,00,00), style='sticks')
         p.add(spec.reprofiledPeaks, color=(00,255,00), style='circles')
-        p.save( filename="output/plotAspect.xhtml")
-        break
+        p.save( filename="output/plotAspect_%s.xhtml" %(n))
 
 def Test():
     filename = "E165ug.mzML"
@@ -43,3 +47,5 @@ if __name__ == "__main__":
     root = Tkinter.Tk()
     root.withdraw()
     inputfile = tkFileDialog.askopenfilename()
+    run = pymzml.run.Reader(inputfile, noiseThreshold = 100)
+    PlotRange(run, 5.681)
