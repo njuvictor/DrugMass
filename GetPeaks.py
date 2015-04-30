@@ -48,4 +48,5 @@ if __name__ == "__main__":
     root.withdraw()
     inputfile = tkFileDialog.askopenfilename()
     run = pymzml.run.Reader(inputfile, noiseThreshold = 100)
-    PlotRange(run, 5.681)
+    #PlotRange(run, 5.681)
+    PlotRange(run, 6.38)

@@ -92,4 +92,4 @@ def SlidingWindow(masslist, run, exspec, rtrange = None, s_win = 0.001):
 
 
 if __name__ == "__main__":
-    main()
+    pass
