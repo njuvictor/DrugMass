@@ -4,6 +4,7 @@
 from ExtractChrom import ExtractSpec
 import pymzml
 from pprint import pprint
+import Tkinter, tkFileDialog
 
 def HighestPeaks(peaklist):
     max_item= (0,0)
@@ -90,7 +91,10 @@ def SlidingWindow(masslist, run, exspec, rtrange = None, s_win = 0.001):
 
 
 def main():
-    ms_file   = "./Data/CCG224144MIDSample5minMS2.mzML"
+    root = Tkinter.Tk()
+    root.withdraw()
+    ms_file = tkFileDialog.askopenfilename()
+    #ms_file   = "./Data/CCG224144MIDSample5minMS2.mzML"
     #ms_file   = "./Data/CCG224144MIDSample5min.mzML"
     exspec = ExtractSpec(ms_file)
     mass_list = [423.3, 268.2]
