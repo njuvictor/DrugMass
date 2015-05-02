@@ -7,6 +7,9 @@ from pprint import pprint
 import Tkinter, tkFileDialog
 
 def HighestPeaks(peaklist):
+    '''
+        Find the highest peaks among the peaklist.
+    '''
     max_item= (0,0)
     for eachitem in peaklist:
         if eachitem[1] > max_item[1]:
@@ -14,13 +17,15 @@ def HighestPeaks(peaklist):
     return max_item
 
 def SelectPeaks(peaks, mzRange):
+    '''
+        Return peaks within mz range.
+    '''
     return [ (mz,i) for mz, i in peaks if mzRange[0] <= mz <= mzRange[1] ]
 
-def AllMassPossibility(a_mass):
-    return [a_mass, a_mass / 2, a_mass / 3, a_mass / 4]
-
 def GetMaxPeakInSpecs(mz_list, specs, run, tolerance = 0.2):
-    # get the maximun peaks in a collection of specs
+    '''
+        Get the maximun peaks for a list of mz in a collection of specs
+    '''
     max_int_dict = dict()
     max_intensity = 0
     rule = MostPeaks()
@@ -46,12 +51,15 @@ def GetMaxPeakInSpecs(mz_list, specs, run, tolerance = 0.2):
             #print "scan time:", spec["scan time"]
             max_int_dict[eachmz] = {"max_int": intensity, "max_mz": mz, "max_time": spec["scan time"], "max_id": spec["id"]}
         if max_int_dict:
+            print max_int_dict, sum([value["max_int"] for key, value in max_int_dict.iteritems()])
             rule.compare(max_int_dict)
     return rule._cur_max_dict
 
 class MostPeaks:
-    # Rule to pick the best match in mass spec with a list of mass
-    # Basically, find the one with most peaks. The way to break tie is sum of intensity
+    '''
+        Rule to pick the best match in mass spec with a list of mass
+        Basically, find the one with most peaks. The way to break tie is sum of intensity
+    '''
     def __init__(self):
         self._max_num_peaks = 0
         self._max_intensity = 0
@@ -69,17 +77,22 @@ class MostPeaks:
             self._max_intensity = new_intensity
             self._cur_max_dict  = new_int_dict
 
-
-def drange(start, stop, step):
+def DRange(start, stop, step):
+    '''
+        return a list of number from start to stop seperated by step
+    '''
     r = start
     while r < stop:
         yield r
         r += step
 
 def SlidingWindow(masslist, run, exspec, rtrange = None, s_win = 0.001):
-    # s_win: sliding window size, which is in minute
+    '''
+        Use a short range of specs to find the maximun peaks in masslist
+        s_win: sliding window size, which is in minute
+    '''
     rule   = MostPeaks()
-    for rt_time in drange(exspec.start_time, exspec.end_time, exspec.interval):
+    for rt_time in DRange(exspec.start_time, exspec.end_time, exspec.interval):
         # ignore the spec out of rtrange
         if (not rtrange is None) and (rt_time < min(rtrange) or rt_time > max(rtrange)):
             continue
@@ -87,7 +100,7 @@ def SlidingWindow(masslist, run, exspec, rtrange = None, s_win = 0.001):
         max_int_dict = GetMaxPeakInSpecs(masslist, specs, run)
         if max_int_dict:
             rule.compare(max_int_dict)
-    print rule._cur_max_dict
+    #print rule._cur_max_dict
 
 
 def main():
