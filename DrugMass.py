@@ -50,9 +50,17 @@ def GetMaxPeakInSpecs(mz_list, specs, run, tolerance = 0.2):
             #print eachrange
             #print "scan time:", spec["scan time"]
             max_int_dict[eachmz] = {"max_int": intensity, "max_mz": mz, "max_time": spec["scan time"], "max_id": spec["id"]}
-        if max_int_dict:
-            print max_int_dict, sum([value["max_int"] for key, value in max_int_dict.iteritems()])
+        if max_int_dict and all([value["max_int"] > 0 for key, value in max_int_dict.iteritems()]):
+            #[ x/sum_intensity for x in mz_intensity]
+            sum_intensity = sum([value["max_int"] for key, value in max_int_dict.iteritems()])
+            print_list = [max_int_dict[x]["max_int"] for x in mz_list]
+            print_list.append([sum_intensity, spec["scan time"]])
+
             rule.compare(max_int_dict)
+    # Tab list order as mass_list, sum intensity, and retention time. Sorted by sum intensity
+    print_list = sorted(print_list, key = lambda x: x[len(mz_list)])
+    print print_list
+
     return rule._cur_max_dict
 
 class MostPeaks:
