@@ -115,7 +115,7 @@ def main():
     #ms_file   = "./Data/CCG224144MIDSample5min.mzML"
     #mass_list = [423.3, 268.2]
     mass_list = [439, 421, 312.2, 252, 170.8]
-    retention_time = [0, 30]
+    retention_time = [0, 10]
     exspec = ExtractSpec(ms_file)
     run = pymzml.run.Reader(ms_file, noiseThreshold = 100)
     SlidingWindow(mass_list, run, exspec, retention_time)
