@@ -28,7 +28,7 @@ def GetMaxPeakInSpecs(mz_list, specs, run, tolerance = 0.2):
     '''
     max_int_dict = dict()
     max_intensity = 0
-    rule = MostPeaks()
+    print_list = []
     for spec_basic in specs:
         idx  = spec_basic.index
         #spec = run[idx]
@@ -50,10 +50,12 @@ def GetMaxPeakInSpecs(mz_list, specs, run, tolerance = 0.2):
             #print eachrange
             #print "scan time:", spec["scan time"]
             max_int_dict[eachmz] = {"max_int": intensity, "max_mz": mz, "max_time": spec["scan time"], "max_id": spec["id"]}
-        if max_int_dict:
-            print max_int_dict, sum([value["max_int"] for key, value in max_int_dict.iteritems()])
-            rule.compare(max_int_dict)
-    return rule._cur_max_dict
+        if max_int_dict and all([value["max_int"] > 0 for key, value in max_int_dict.iteritems()]):
+            #[ x/sum_intensity for x in mz_intensity]
+            sum_intensity = sum([value["max_int"] for key, value in max_int_dict.iteritems()])
+            print_list = [max_int_dict[x]["max_int"] for x in mz_list]
+            print_list += [sum_intensity, spec["scan time"]]
+    return print_list
 
 class MostPeaks:
     '''
@@ -91,16 +93,18 @@ def SlidingWindow(masslist, run, exspec, rtrange = None, s_win = 0.001):
         Use a short range of specs to find the maximun peaks in masslist
         s_win: sliding window size, which is in minute
     '''
-    rule   = MostPeaks()
+    all_print_list = []
     for rt_time in DRange(exspec.start_time, exspec.end_time, exspec.interval):
         # ignore the spec out of rtrange
         if (not rtrange is None) and (rt_time < min(rtrange) or rt_time > max(rtrange)):
             continue
-        specs  = exspec.extractWithTimeRange(rt_time, rt_time + s_win)
-        max_int_dict = GetMaxPeakInSpecs(masslist, specs, run)
-        if max_int_dict:
-            rule.compare(max_int_dict)
-    #print rule._cur_max_dict
+        specs      = exspec.extractWithTimeRange(rt_time, rt_time + s_win)
+        print_list = GetMaxPeakInSpecs(masslist, specs, run)
+        if print_list:
+            all_print_list.append(print_list)
+            # Tab list order as mass_list, sum intensity, and retention time. Sorted by sum intensity
+    all_print_list = sorted(all_print_list, key = lambda x: -x[len(masslist)])
+    print "\n".join(["\t".join(map(str, x)) for x in all_print_list])
 
 
 def main():
@@ -109,7 +113,8 @@ def main():
     ms_file = tkFileDialog.askopenfilename()
     #ms_file   = "./Data/CCG224144MIDSample5minMS2.mzML"
     #ms_file   = "./Data/CCG224144MIDSample5min.mzML"
-    mass_list = [423.3, 268.2]
+    #mass_list = [423.3, 268.2]
+    mass_list = [439, 421, 312.2, 252, 170.8]
     retention_time = [0, 30]
     exspec = ExtractSpec(ms_file)
     run = pymzml.run.Reader(ms_file, noiseThreshold = 100)
