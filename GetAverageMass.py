@@ -59,11 +59,11 @@ def main():
     #mass_list = [423.3, 268.2]
     mass_list = [439, 421, 312.2, 252, 170.8]
     rt_time = 5.83
-    average_interval = 1
+    average_interval = 0.3
     exspec = ExtractSpec(ms_file)
     run = pymzml.run.Reader(ms_file, noiseThreshold = 100)
     spec_ave = GetAveSpecForRT(mass_list, run, exspec, rt_time, average_interval)
-    FindPeaksInSpec(mass_list, spec_ave)
+    FindPeaksInSpec(mass_list, spec_ave, 0.5)
 
 if __name__ == "__main__":
     main()
