@@ -52,7 +52,7 @@ def main():
     root.withdraw()
     #ms_file = tkFileDialog.askopenfilename()
     ms_file   = "./Data/CCG224144MIDSample5minMS2.mzML"
-    mass_list = [439, 421, 312.2, 252, 170.8]
+    mass_list = [423.3, 405,296.2,268.2,171]  #Only for parent drug fragments
     exspec = ExtractSpec(ms_file)
     run = pymzml.run.Reader(ms_file, noiseThreshold = 100)
     intensity_1 = SpecSumIntensity4MassList(mass_list, 5.83, exspec)
